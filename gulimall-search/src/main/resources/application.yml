@@ -1,0 +1,21 @@
+spring:
+  # 服务发现
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 121.36.229.15:8848
+  redis:
+    host: 81.68.236.154
+    password: lif314
+    port: 6379
+  # 模块名
+  application:
+    name: gulimall-search
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  thymeleaf:
+    cache: false
+
+server:
+  port: 9000

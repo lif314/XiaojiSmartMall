@@ -1,0 +1,32 @@
+spring:
+  redis:
+    host: 81.68.236.154
+    password: lif314
+    port: 6379
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://121.36.229.15:3306/gulimall_oms?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+  # 服务发现
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 121.36.229.15:8848
+  # 模块名
+  application:
+    name: gulimall-order
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+# sql映射文件位置
+mybatis-plus:
+  mapper-locations: classpath:/mapper/**/*.xml
+  global-config:
+    db-config:
+      # 主键自增
+      id-type: auto
+
+server:
+  port: 8200

@@ -1,0 +1,24 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 121.36.229.15:8848
+    alicloud:
+      access-key: LTAI5tFgyxgqZfKTDbgVWJbd
+      secret-key: TYXFVknpv3RhLFcf2Cel3OdspRs6bX
+      oss:
+        endpoint: oss-cn-shanghai.aliyuncs.com
+        bucket: gulimall-lif314
+      sms:
+        host: https://jmsms.market.alicloudapi.com
+        path: /sms/send
+        appcode: 57626bdd760949f1a9cd1184a6418ff6
+        templateId: M72CB42894
+  application:
+    name: gulimall-third-party
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+server:
+  port: 30000

@@ -1,0 +1,27 @@
+spring:
+  # 服务发现
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 121.36.229.15:8848
+  redis:
+    host: 81.68.236.154
+    password: lif314
+    port: 6379
+  # 模块名
+  application:
+    name: gulimall-auth-server
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+server:
+  port: 9200
+
+oauth:
+  gitee:
+    clientid: f518ed7554211da25276cfb43c37e0d423b0e048dd8848c2a48292879092dd13
+    clientsecret: 97829c106e00d9ae2a9e955af592462ed082be87b30845cee40e36d6af2342aa
+    redirecturi: http://auth.feihong.com/oauth2.0/gitee/success
+
+
