@@ -14,7 +14,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SearchResult {
+public class SearchResultVo {
 
     private List<SkuEsModel> products;// es检索到的所有商品信息
 

@@ -23,7 +23,9 @@ import java.util.Map;
 
 /**
  * 处理社交登录请求
+ * @TODO 社交登录暂留
  */
+@RequestMapping("/auth")
 @Controller
 public class OAuth2Controller {
 

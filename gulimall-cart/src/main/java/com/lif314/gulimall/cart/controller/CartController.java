@@ -1,22 +1,21 @@
 package com.lif314.gulimall.cart.controller;
 
+import com.lif314.common.utils.R;
 import com.lif314.gulimall.cart.service.CartService;
 import com.lif314.gulimall.cart.vo.Cart;
 import com.lif314.gulimall.cart.vo.CartItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-
-@Controller
+@RequestMapping("/cart")
+@RestController
 public class CartController {
 
 
@@ -35,17 +34,17 @@ public class CartController {
      *
      * @param session 判断用户是否登录
      */
-    @GetMapping("/cart.html")
-    public String cartListPage(HttpSession session, Model model){
+    // 获取购物车列表
+    @GetMapping("/list")
+    public R cartListPage(HttpSession session){
         // 使用拦截器判断是否处于登录状态
         // 并快速获取用户信息 ThreadLocal -- 同一个线程共享数据
         // 拦截器共享了一个ThreadLocal -- 线程上下文
         // UserInfoTo userInfoTo = CartInterceptor.threadLocal.get();
         Cart cart = cartService.getCart();
-        model.addAttribute("cart", cart);
         // 清理ThreadLocal中的数据
 //        CartInterceptor.threadLocal.remove();
-        return "cartList";
+        return R.ok().put("data", cart);
     }
 
 
@@ -56,44 +55,32 @@ public class CartController {
      * @param num 商品的数量
      */
     @GetMapping("/addToCart")
-    public String addToCart(@RequestParam("skuId") Long skuId,
-                            @RequestParam("num") Integer num,
-                            RedirectAttributes redirectAttributes) throws ExecutionException, InterruptedException {
+    public R addToCart(@RequestParam("skuId") Long skuId,
+                            @RequestParam("num") Integer num) throws ExecutionException, InterruptedException {
 
         CartItem cartItem = cartService.addToCart(skuId, num);
-        // 重定向到新的页面，查询数据进行展示
-        redirectAttributes.addAttribute("skuId", skuId);
-        /**
-         * redirectAttributes.addAttribute：将数据放在URL中，作为路径变量
-         * redirectAttributes.addFlashAttribute: 将数据放在Session中，
-         *      可以在也页面取出，但只能取一次
-         */
-        // 添加成功，会带success页面
-        // 这种方法每次刷新都会更改商品的数量
-        // 可以使用重定向来解决
-        return "redirect:http://cart.feihong.com/addToCartSuccess.html";
+        return R.ok().put("data", skuId);
     }
 
 
     /**
      *跳到成功页
      */
-    @GetMapping("/addToCartSuccess.html")
-    public String addToCartSuccess(@RequestParam("skuId") Long skuId, Model model){
+    @GetMapping("/addToCartSuccess")
+    public R addToCartSuccess(@RequestParam("skuId") Long skuId){
         // 重定向到成功也买你，再次查询购物车中的数据
         CartItem item = cartService.getCartItemRedis(skuId);
-        model.addAttribute("item", item);
-        return "success";
+        return R.ok().put("data", item);
     }
 
 
     // 选中购物项: http://cart.feihong.com/checkItem?skuId=" + skuId + "&check="+(check?1:0)
     @GetMapping("/checkItem")
-    public String checkItem(@RequestParam("skuId") Long skuId,
+    public R checkItem(@RequestParam("skuId") Long skuId,
                             @RequestParam("check") Integer check){
         cartService.checkItem(skuId, check);
         // 重定向到购物车列表页
-        return "redirect:http://cart.feihong.com/cart.html";
+        return R.ok();
     }
 
     /**
@@ -101,11 +88,11 @@ public class CartController {
      * "http://cart.feihong.com/countItem?skuId=" + skuId + "&num="+countNum;
      */
     @GetMapping("/countItem")  // 需要跳转的都是Get请求
-    public String countItem(@RequestParam("skuId") Long skuId,
+    public R countItem(@RequestParam("skuId") Long skuId,
                             @RequestParam("num") Integer num){
         cartService.changeItemCount(skuId, num);
         // 修改成功后，跳转购物车页面
-        return "redirect:http://cart.feihong.com/cart.html";
+        return R.ok();
     }
 
     /**
@@ -114,21 +101,17 @@ public class CartController {
      * location.href = "http://cart.feihong.com/deleteItem?skuId=" + deleteSkuId;
      */
     @GetMapping("/deleteItem")
-    public String deleteItem(@RequestParam("skuId") Long skuId){
+    public R deleteItem(@RequestParam("skuId") Long skuId){
         cartService.deleteItem(skuId);
-        return "redirect:http://cart.feihong.com/cart.html";
+        return R.ok();
     }
 
 
     /**
      * 获取当前用户选中的购物项
      */
-    @ResponseBody  // 返回json数据
     @GetMapping("/currentUserCartItems")
     public List<CartItem> getCurrentUserCartItems(){
        return cartService.getCurrentUserCartItems();
     }
-
-
-
 }

@@ -5,8 +5,8 @@ import com.lif314.common.constant.EsConstant;
 import com.lif314.common.to.es.SkuEsModel;
 import com.lif314.gulimall.search.config.GulimallElasticSearchConfig;
 import com.lif314.gulimall.search.service.SearchService;
-import com.lif314.gulimall.search.vo.SearchParam;
-import com.lif314.gulimall.search.vo.SearchResult;
+import com.lif314.gulimall.search.vo.SearchParamVo;
+import com.lif314.gulimall.search.vo.SearchResultVo;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.action.search.SearchRequest;
@@ -51,13 +51,13 @@ public class SearchServiceImpl implements SearchService {
 
     // 在ES中进行检索
     @Override
-    public SearchResult search(SearchParam searchParam) {
+    public SearchResultVo search(SearchParamVo searchParam) {
         // 1、动态构建出查询需要的DSL语句
 
         // 1、准备检索请求
         SearchRequest searchRequest = buildSearchRequest(searchParam);
 
-        SearchResult result = null;
+        SearchResultVo result = null;
         try {
             // 2、执行检索请求
             SearchResponse response = client.search(searchRequest, GulimallElasticSearchConfig.COMMON_OPTIONS);
@@ -73,7 +73,7 @@ public class SearchServiceImpl implements SearchService {
      * 构建检索请求
      * 模糊匹配，过滤(按照属性、分类、品牌、价格区间、库存); 排序、分页；高亮，聚合分析
      */
-    private SearchRequest buildSearchRequest(SearchParam param) {
+    private SearchRequest buildSearchRequest(SearchParamVo param) {
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 
         /**
@@ -204,8 +204,8 @@ public class SearchServiceImpl implements SearchService {
     /**
      * 分析检索结果--封装数据
      */
-    private SearchResult buildSearchResult(SearchResponse response, SearchParam param) {
-        SearchResult result = new SearchResult();
+    private SearchResultVo buildSearchResult(SearchResponse response, SearchParamVo param) {
+        SearchResultVo result = new SearchResultVo();
 
         // 1. 返回查询到的所有商品
         // 总记录数
@@ -235,11 +235,11 @@ public class SearchServiceImpl implements SearchService {
 
         // 2. 当前商品涉及的分类信息
         ParsedLongTerms catalog_agg = aggregations.get("catalog_agg");
-        List<SearchResult.CatalogVo> catalogVos  =  new ArrayList<>();
+        List<SearchResultVo.CatalogVo> catalogVos  =  new ArrayList<>();
         String catalogName = null;// 面包屑map数据源【分类】
         for (Terms.Bucket bucket : catalog_agg.getBuckets()) {
             // 获取分类id和名字
-            SearchResult.CatalogVo catalogVo = new SearchResult.CatalogVo();
+            SearchResultVo.CatalogVo catalogVo = new SearchResultVo.CatalogVo();
             catalogVo.setCatalogId(bucket.getKeyAsNumber().longValue());
             // 获取分类名字
             ParsedStringTerms catalog_name_agg = bucket.getAggregations().get("catalog_name_agg");
@@ -255,11 +255,11 @@ public class SearchServiceImpl implements SearchService {
 
         // 3. 当前所有商品涉及到的品牌信息
         ParsedLongTerms brand_agg = aggregations.get("brand_agg");
-        List<SearchResult.BrandVo> brandVos = new ArrayList<>();
+        List<SearchResultVo.BrandVo> brandVos = new ArrayList<>();
         Map<Long, String> brandMap = new HashMap<>();// 面包屑map数据源【品牌】
         for (Terms.Bucket bucket : brand_agg.getBuckets()) {
             // 获取品牌的id 名字  图片
-            SearchResult.BrandVo brandVo = new SearchResult.BrandVo();
+            SearchResultVo.BrandVo brandVo = new SearchResultVo.BrandVo();
             // id
             long brandId = bucket.getKeyAsNumber().longValue();
             // 图片
@@ -286,10 +286,10 @@ public class SearchServiceImpl implements SearchService {
         Map<Long, String> attrMap = new HashMap<>();// 面包屑map数据源【属性名】
         // 4. 当前商品涉及的所有属性信息
         ParsedNested attr_agg = aggregations.get("attr_agg");
-        List<SearchResult.AttrVo> attrVos = new ArrayList<>();
+        List<SearchResultVo.AttrVo> attrVos = new ArrayList<>();
         ParsedLongTerms attr_id_agg = attr_agg.getAggregations().get("attr_id_agg");
         for (Terms.Bucket bucket : attr_id_agg.getBuckets()) {
-            SearchResult.AttrVo attrVo =  new SearchResult.AttrVo();
+            SearchResultVo.AttrVo attrVo =  new SearchResultVo.AttrVo();
             // 属性id
             long attr_id = bucket.getKeyAsNumber().longValue();
             // 属性名字
@@ -333,12 +333,12 @@ public class SearchServiceImpl implements SearchService {
 
 
         //  TODO 6. 构建面包屑导航数据_属性
-        List<SearchResult.NavVo> navs = new ArrayList<>();
+        List<SearchResultVo.NavVo> navs = new ArrayList<>();
         if (!CollectionUtils.isEmpty(param.getAttrs())) {
             // 属性非空才需要面包屑功能
             navs = param.getAttrs().stream().map(attr -> {
                 // attr：15_海思 分析ttrs传过来的参数值
-                SearchResult.NavVo nav = new SearchResult.NavVo();
+                SearchResultVo.NavVo nav = new SearchResultVo.NavVo();
                 String[] arr = attr.split("_"); // id_值
                 // 封装筛选属性ID集合【给前端判断哪些属性是筛选条件，从而隐藏显示属性栏，显示在面包屑中】
                 result.getAttrIds().add(Long.parseLong(arr[0]));
@@ -357,7 +357,7 @@ public class SearchServiceImpl implements SearchService {
         // 7.构建面包屑导航数据_品牌
         if (!CollectionUtils.isEmpty(param.getBrandId())) {
             // 多个品牌ID封装成一级面包屑，所以这里只需要一个NavVo
-            SearchResult.NavVo nav = new SearchResult.NavVo();
+            SearchResultVo.NavVo nav = new SearchResultVo.NavVo();
             // 面包屑名称直接使用品牌
             nav.setNavName("品牌");
             StringBuffer buffer = new StringBuffer();
@@ -394,7 +394,7 @@ public class SearchServiceImpl implements SearchService {
         return result;
     }
 
-    private String replaceQueryString(SearchParam param, String key, String value) {
+    private String replaceQueryString(SearchParamVo param, String key, String value) {
         // 解决编码问题，前端参数使用UTF-8编码了
         String encode = null;
         encode = UriEncoder.encode(value);

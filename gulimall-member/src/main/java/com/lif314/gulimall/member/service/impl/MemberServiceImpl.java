@@ -44,9 +44,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
      * 注册用户信息
      */
     @Override
-    public void register(MemberRegisterVo vo) {
+    public MemberEntity register(MemberRegisterVo vo) {
         MemberEntity memberEntity = new MemberEntity();
-
         // 先要判断用户名和手机号是否已经存在
         checkPhoneUnique(vo.getPhone());
         checkUserNameUnique(vo.getUserName());
@@ -69,6 +68,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
         memberEntity.setPassword(encode);
         // 保存数据
         this.baseMapper.insert(memberEntity);
+        // 返回用户信息
+        return memberEntity;
     }
 
     @Override

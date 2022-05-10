@@ -24,7 +24,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SearchParam {
+public class SearchParamVo {
 
     /**
      * - 搜索框跳转
@@ -50,7 +50,7 @@ public class SearchParam {
      * attrs=1_白色:蓝色&attrs=2_2寸:5寸【属性可多选，值也可多选】
      */
     private Integer hasStock; // 是否只显示有货，默认显示所有，null == 1会NullPoint异常  0/1
-    private String skuPrice; // 是否只显示有货
+    private String skuPrice;
     private List<Long> brandId; // 品牌id，可多选
     private List<String> attrs; // 三级分类id+属性值
 

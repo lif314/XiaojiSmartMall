@@ -84,14 +84,14 @@ public class MemberController {
     @PostMapping("/register")
     public R register(@RequestBody MemberRegisterVo vo){
         try{
-            memberService.register(vo);
+            MemberEntity member = memberService.register(vo);
+            return R.ok().put("data", member);
         }catch (PhoneExistException e){
             // 处理异常
             return R.error(BizCodeEnum.PHONE_EXIST_EXCEPTION.getCode(), BizCodeEnum.PHONE_EXIST_EXCEPTION.getMsg());
-        }catch (UsernameExistException e){
+        }catch (UsernameExistException e) {
             return R.error(BizCodeEnum.USER_EXIST_EXCEPTION.getCode(), BizCodeEnum.USER_EXIST_EXCEPTION.getMsg());
         }
-        return R.ok();
     }
 
     /**

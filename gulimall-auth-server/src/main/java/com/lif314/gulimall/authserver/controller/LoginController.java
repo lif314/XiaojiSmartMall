@@ -29,7 +29,8 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-@Controller  // 页面跳转， @RestController会将return结果放在body中，导致无法实现页面提交和跳转
+@RestController  // 页面跳转， @RestController会将return结果放在body中，导致无法实现页面提交和跳转
+@RequestMapping("/auth")
 public class LoginController {
 
     /**
@@ -44,7 +45,11 @@ public class LoginController {
     @Autowired
     MemberFeignService memberFeignService;
 
-    @ResponseBody // 返回JSON数据
+    /**
+     *发送验证码
+     * @param phone 电话号码
+     * @return 返回验证码
+     */
     @GetMapping("/sms/sendcode")
     public R sendCode(@RequestParam("phone") String phone){
         // TODO 验证码接口防刷
@@ -67,9 +72,9 @@ public class LoginController {
         for (int index = 0; index < nonceChars.length; ++index) {
             nonceChars[index] = SYMBOLS.charAt(RANDOM.nextInt(SYMBOLS.length()));
         }
+        // 6位随机数验证码
         String code =  new String(nonceChars);
 
-//        String code = UUID.randomUUID().toString().substring(0,5);
         // 防刷：在redis中存入当前时间，下一次发送请求时，查看是否在60s内
         String redisCode = code + "_" + System.currentTimeMillis();
         redisTemplate.opsForValue().set(AuthServerConstant.SMS_CODE_CACHE_PREFIX + phone, redisCode, 10, TimeUnit.MINUTES);
@@ -78,33 +83,34 @@ public class LoginController {
         SmsTo smsTo = new SmsTo();
         smsTo.setPhone(phone);
         smsTo.setCode(code);
-        thirdPartySerrvice.sendCode(smsTo);
-        return R.ok();
+        R r =  thirdPartySerrvice.sendCode(smsTo);
+        if(r.getCode() == 0){
+            // 返回验证码给前端，进行校验
+            return R.ok().put("data", code);
+        }else{
+            return R.error();
+        }
     }
 
     /**
      * TODO  重定向携带数据，利用session原理，将数据放在session中
-     * RedirectAttributes:模拟重定向发送数
+     */
+    /**
+     * 注册
+     * @param vo 注册请求体
+     * @param bindingResult 数据校验
+     * @return  注册成功与失败
      */
     @PostMapping("/register")
-    public String register(@Valid UserRegisterVo vo, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+    public  R register(@Valid @RequestBody UserRegisterVo vo , BindingResult bindingResult) {
         // 1. 进行数据校验
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = bindingResult.getFieldErrors().stream().collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));
-//            model.addAttribute("errors", errors);
-            // 重定向携带数据
-            redirectAttributes.addFlashAttribute("errors", errors);
-            // 如果注册失败，重新注册页
-            // 防止表单重复提交 -- 转发
-//            return "register"; // 会进行拼串
-            // 使用重定向视图 -- 必须使用完整域名
-            return "redirect:http://auth.feihong.com/register.html";  // 转发不进行拼串
-
-            // POST not supported
-            // 用户注册-->/register.html[post]--> 转发/register.html 路径映射只能使用get方式访
+            // 收集校验的错误信息返回
+            return R.error().put("data", errors);
         }
 
-        // 2. 校验验证码
+        // 2. 后端校验验证码
         String code = vo.getCode();
         String redisCode = redisTemplate.opsForValue().get(AuthServerConstant.SMS_CODE_CACHE_PREFIX + vo.getPhone());
         if (StringUtils.isNotEmpty(redisCode)) {
@@ -117,38 +123,44 @@ public class LoginController {
                 // 3.调用远程服务进行注册
                 // 需要判断用户名和手机号不能是已经存在的
                 R r = memberFeignService.register(vo);
-                if(r.getCode() != 0){
+                if (r.getCode() != 0) {
                     // 调用失败, 返回注册页
                     Map<String, String> errors = new HashMap<>();
                     errors.put("msg", r.get("msg").toString());
-                    redirectAttributes.addFlashAttribute("errors", errors);
-                    return "redirect:http://auth.feihong.com/register.html";
+                    return R.error().put("data", errors);
+                }else{
+                    Object data = r.get("data");
+                    String s = JSON.toJSONString(data);
+                    MemberRespTo memberRespTo = JSON.parseObject(s, new TypeReference<MemberRespTo>() {
+                    });
+                    // 注册成功
+                    return R.ok();
                 }
-                // 注册成功，回到登录页面
-                return "redirect:http://auth.feihong.com/login.html";
 
-                // 重定向：注册成功后回到首页/回到登录页
-                // registry.addViewController("/login").setViewName("login");
-                // return "redirect:http://auth.feihong.com/login";
             } else {
                 // 验证码错误
                 Map<String, String> errors = new HashMap<>();
                 errors.put("code", "验证码错误");
-                redirectAttributes.addFlashAttribute("errors", errors);
-                return "redirect:http://auth.feihong.com/register.html";
+                return R.error().put("data", errors);
             }
         } else {
             // 验证码过期
             Map<String, String> errors = new HashMap<>();
             errors.put("code", "验证码已过期");
-            redirectAttributes.addFlashAttribute("errors", errors);
-            return "redirect:http://auth.feihong.com/register.html";
+            return R.error().put("data", errors);
         }
     }
 
 
+    /**
+     * 登录
+     * @param vo 登录数据
+     * @param session session
+     * @return 返回登录结果
+     * @TODO token登录认证
+     */
     @PostMapping("/login")
-    public String login(UserLoginVo vo, RedirectAttributes redirectAttributes, HttpSession session){
+    public R login(UserLoginVo vo, HttpSession session){
         // 调用远程登录
         R r = memberFeignService.login(vo);
         if(r.getCode() == 0) {
@@ -157,25 +169,25 @@ public class LoginController {
             String toString = JSON.toJSON(data).toString();
             MemberRespTo memberRespTo = JSON.parseObject(toString, MemberRespTo.class);
             session.setAttribute(AuthServerConstant.LOGIN_USER, memberRespTo);
-            return "redirect:http://feihong.com";
+            // @TODO 暂时返回用户信息
+            return R.ok().put("data", memberRespTo);
         }else{
             // 登录失败
             Map<String, String> errors = new HashMap<>();
             errors.put("msg", r.get("msg").toString());
-            redirectAttributes.addFlashAttribute("errors", errors);
-            return "redirect:http://auth.feihong.com/login.html";
+            return R.error().put("data", errors);
         }
     }
 
-    @GetMapping("/login.html")
-    public String loginPage(HttpSession session){
-        Object attribute = session.getAttribute(AuthServerConstant.LOGIN_USER);
-        if(attribute == null){
-            // 回到登录页
-            return "login";
-        }else{
-            // 回到首页
-            return "redirect:http://feihong.com";
-        }
-    }
+//    @GetMapping("/login.html")
+//    public String loginPage(HttpSession session){
+//        Object attribute = session.getAttribute(AuthServerConstant.LOGIN_USER);
+//        if(attribute == null){
+//            // 回到登录页
+//            return "login";
+//        }else{
+//            // 回到首页
+//            return "redirect:http://feihong.com";
+//        }
+//    }
 }
