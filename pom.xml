@@ -21,6 +21,12 @@
         <module>gulimall-ware</module>
         <module>renren-fast</module>
         <module>gulimall-common</module>
+        <module>gulimall-search</module>
+        <module>gulimall-auth-server</module>
+        <module>gulimall-gateway</module>
+        <module>gulimall-cart</module>
+        <module>gulimall-third-party</module>
+        <module>gulimall-seckill</module>
     </modules>
 
     <properties>
