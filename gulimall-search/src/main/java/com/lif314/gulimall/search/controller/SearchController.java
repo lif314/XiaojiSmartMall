@@ -6,10 +6,7 @@ import com.lif314.gulimall.search.vo.SearchParamVo;
 import com.lif314.gulimall.search.vo.SearchResultVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 @Controller  // 页面跳转
 @RequestMapping("/search")
@@ -22,8 +19,9 @@ public class SearchController {
      * SpringMVC 自动将页面提交过来的所有请求的查询参数封装成指定的对象
      */
     // http://search.feihong.com/search.html?catalog3Id=165
+    // Get方法不接收RequestBody,要么路径参数要么RequestParam
     @ResponseBody
-    @GetMapping("/list")  // 点击分类跳转到搜索页面
+    @PostMapping("/list")  // 点击分类跳转到搜索页面
     public R listPage(@RequestBody SearchParamVo searchParam) {
         // 查询条件
         // 获取query参数
