@@ -36,6 +36,4 @@ public class OrderCloseListener {
             channel.basicReject(message.getMessageProperties().getDeliveryTag(), true);
         }
     }
-
-
 }

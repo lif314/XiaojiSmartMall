@@ -14,15 +14,15 @@ import org.springframework.session.web.http.DefaultCookieSerializer;
 @Configuration
 public class GulimallSessionConfig {
 
-    @Bean
-    public CookieSerializer cookieSerializer(){
-        DefaultCookieSerializer cookieSerializer = new DefaultCookieSerializer();
-        // 设置作用域
-        cookieSerializer.setDomainName("feihong.com");
-        // 设置名字
-        cookieSerializer.setCookieName("GULISESSION");
-        return cookieSerializer;
-    }
+//    @Bean
+//    public CookieSerializer cookieSerializer(){
+//        DefaultCookieSerializer cookieSerializer = new DefaultCookieSerializer();
+//        // 设置作用域
+//        cookieSerializer.setDomainName("feihong.com");
+//        // 设置名字
+//        cookieSerializer.setCookieName("GULISESSION");
+//        return cookieSerializer;
+//    }
 
     // 序列化器
     @Bean

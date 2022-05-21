@@ -347,8 +347,8 @@ public class SearchServiceImpl implements SearchService {
                 // 面包屑值：属性值
                 nav.setNavValue(arr[1]);
                 // 设置跳转地址（将属性条件置空）【当取消面包屑上的条件时，跳转地址】
-                String replace = replaceQueryString(param, "attrs", attr);
-                nav.setLink("http://search.feihong.com/search.html?" + replace);// 每一个属性都有自己对应的回退地址
+//                String replace = replaceQueryString(param, "attrs", attr);
+//                nav.setLink("http://search.feihong.com/search.html?" + replace);// 每一个属性都有自己对应的回退地址
 
                 return nav;
             }).collect(Collectors.toList());
@@ -366,10 +366,10 @@ public class SearchServiceImpl implements SearchService {
                 // 多个brandId筛选条件汇总为一级面包屑，所以navValue拼接所有品牌名
                 buffer.append(brandMap.get(brandId)).append(";");
                 // 因为多个brandId汇总为一级面包屑，所以每一个brandId筛选条件都要删除
-                replace = replaceQueryString(param, "brandId", brandId.toString());
+//                replace = replaceQueryString(param, "brandId", brandId.toString());
             }
-            nav.setNavValue(buffer.toString());// 品牌拼接值
-            nav.setLink("http://search.feihong.com/search.html?" + replace);// 回退品牌面包屑等于删除所有品牌条件
+//            nav.setNavValue(buffer.toString());// 品牌拼接值
+//            nav.setLink("http://search.feihong.com/search.html?" + replace);// 回退品牌面包屑等于删除所有品牌条件
 
             navs.add(nav);
         }
@@ -394,21 +394,22 @@ public class SearchServiceImpl implements SearchService {
         return result;
     }
 
-    private String replaceQueryString(SearchParamVo param, String key, String value) {
-        // 解决编码问题，前端参数使用UTF-8编码了
-        String encode = null;
-        encode = UriEncoder.encode(value);
-//                try {
-//                    encode = URLEncoder.encode(attr, "UTF-8");// java将空格转义成了+号
-//                    encode = encode.replace("+", "%20");// 浏览器将空格转义成了%20，差异化处理，否则_queryString与encode匹配失败
-//                } catch (UnsupportedEncodingException e) {
-//                    e.printStackTrace();
-//                }
-        // TODO BUG，第一个参数不带&
-        // 替换掉当前查询条件，剩下的查询条件即是回退地址
-        String replace = param.get_queryString().replace("&" + key + "=" + encode, "");
-        return replace;
-    }
+//    private String replaceQueryString(SearchParamVo param, String key, String value) {
+//        // 解决编码问题，前端参数使用UTF-8编码了
+//        String encode = null;
+//        encode = UriEncoder.encode(value);
+////                try {
+////                    encode = URLEncoder.encode(attr, "UTF-8");// java将空格转义成了+号
+////                    encode = encode.replace("+", "%20");// 浏览器将空格转义成了%20，差异化处理，否则_queryString与encode匹配失败
+////                } catch (UnsupportedEncodingException e) {
+////                    e.printStackTrace();
+////                }
+//        // TODO BUG，第一个参数不带&
+//        // 替换掉当前查询条件，剩下的查询条件即是回退地址
+//        if(param.get_queryString() != null){
+//        String replace = param.get_queryString().replace("&" + key + "=" + encode, "");
+//        return replace;
+//    }
 
 
 }

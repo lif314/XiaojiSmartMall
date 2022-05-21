@@ -40,5 +40,4 @@ public class ElasticSaveController {
            return R.error(BizCodeEnum.PRODUCT_UP_EXCEPTION.getCode(), BizCodeEnum.PRODUCT_UP_EXCEPTION.getMsg());
        }
     }
-
 }

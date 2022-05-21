@@ -49,7 +49,7 @@ public class LoginUserInterceptor implements HandlerInterceptor {
             }else{
                 // 没有登录就去登录
                 request.getSession().setAttribute("msg", "请先登录！");
-                response.sendRedirect("http://auth.feihong.com/login.html");
+//                response.sendRedirect("http://auth.feihong.com/login.html");
                 return false;
             }
         }else {
