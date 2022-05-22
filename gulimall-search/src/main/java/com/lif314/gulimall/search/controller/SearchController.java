@@ -11,7 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 
-@RestController  // 页面跳转
+@Controller  // 页面跳转
 @RequestMapping("/search")
 public class SearchController {
 
@@ -22,13 +22,14 @@ public class SearchController {
      * SpringMVC 自动将页面提交过来的所有请求的查询参数封装成指定的对象
      */
     // http://search.feihong.com/search.html?catalog3Id=165
-    @RequestMapping("/list")  // 点击分类跳转到搜索页面
-    public R listPage(SearchParamVo searchParam) {
+    @ResponseBody
+    @PostMapping("/list")  // 点击分类跳转到搜索页面
+    public R listPage(@RequestBody SearchParamVo searchParam) {
         // 获取query参数
-//        System.out.println("参数：" + searchParam);
-        String s = JSON.toJSONString(searchParam);
-        SearchParamVo param = JSON.parseObject(s, new TypeReference<SearchParamVo>(){});
-        SearchResultVo result = searchService.search(param);
+        System.out.println("参数：" + searchParam);
+//        String s = JSON.toJSONString(searchParam);
+//        SearchParamVo param = JSON.parseObject(s, new TypeReference<SearchParamVo>(){});
+        SearchResultVo result = searchService.search(searchParam);
         return R.ok().put("data", result);
     }
 }

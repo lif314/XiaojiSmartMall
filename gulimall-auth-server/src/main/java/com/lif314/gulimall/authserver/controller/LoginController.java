@@ -160,7 +160,7 @@ public class LoginController {
      * @TODO token登录认证
      */
     @PostMapping("/login")
-    public R login(UserLoginVo vo, HttpSession session){
+    public R login(@RequestBody UserLoginVo vo, HttpSession session){
         // 调用远程登录
         R r = memberFeignService.login(vo);
         if(r.getCode() == 0) {
