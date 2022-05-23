@@ -38,7 +38,7 @@ public class LoginUserInterceptor implements HandlerInterceptor {
         // 解决远程调用需要登录问题--匹配路由直接放行
         // /order/order/status/{orderSn}
         String requestURI = request.getRequestURI();
-        System.out.println(requestURI);
+//        System.out.println(requestURI);
         AntPathMatcher antPathMatcher = new AntPathMatcher();
         boolean match = antPathMatcher.match("/order/order/status/**", requestURI);
         boolean match1 = antPathMatcher.match("/payed/notify", requestURI);
@@ -47,12 +47,12 @@ public class LoginUserInterceptor implements HandlerInterceptor {
         }
 
         String token = request.getHeader("TOKEN");
-        System.out.println("token"+token);
+//        System.out.println("token"+token);
         String key = AuthServerConstant.LOGIN_USER + token;
         String s = redisTemplate.opsForValue().get(key);
         MemberRespTo memberRespTo = JSON.parseObject(s, new TypeReference<MemberRespTo>() {
         });
-        System.out.println(memberRespTo);
+//        System.out.println(memberRespTo);
         if(memberRespTo != null){
             // 登录
             loginUser.set(memberRespTo);  // 共享用户数据

@@ -40,8 +40,8 @@ public class WebOrderController {
      * 提交订单
      */
     @PostMapping("/submitOrder")
-    public R submitOrder(OrderSubmitVo submitVo){
-
+    public R submitOrder(@RequestBody OrderSubmitVo submitVo){
+        System.out.println("order:"+submitVo);
         // 去创建订单，验令牌，验价格，锁库存。。。。
 
         SubmitOrderRespVo respVo =  orderService.submitOrder(submitVo);

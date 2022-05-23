@@ -31,15 +31,17 @@ public class WebPayController {
      * 2、支付成功后跳转到用户页面
      * th:href= "'http://order.feihong.com/PayOrder?orderSn='+${submitOrderResp.order.orderSn}"
      */
-    @GetMapping(value = "/payOrder", produces = "text/html")  // 告诉产生html数据，而不是json数据
+    @GetMapping(value = "/payOrder")  // 告诉产生html数据，而不是json数据
     public R payOrder(@RequestParam("orderSn") String orderSn) throws AlipayApiException {
         // 获取订单的支付信息
+//        System.out.println(orderSn);
         PayVo payVo = orderService.getOrderByOrderSn(orderSn);
         // 调用alipay -- 响应数据为HTML表单
         // 将此页面直接交给浏览器进行渲染
         String pay = alipayTemplate.pay(payVo);
         orderService.updateOrderStatus(orderSn);
         // 这是一个页面模板，直接让浏览器渲染
+//        System.out.println(pay);
         return R.ok().put("data", pay);
     }
 

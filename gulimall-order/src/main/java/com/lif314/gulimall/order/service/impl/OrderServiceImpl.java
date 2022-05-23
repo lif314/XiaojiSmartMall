@@ -298,6 +298,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
         // 返回值，0 失败   1成功
         Long result = redisTemplate.execute(new DefaultRedisScript<>(script, Long.class), Arrays.asList(OrderConstant.USER_ORDER_TOKEN_PREFIX + memberRespTo.getId()), orderToken);
+        System.out.println("vali_res"+result);
         if (result == 0L) {
             // 验证失败-- 订单信息过期
             respVo.setCode(1);
@@ -309,7 +310,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             // 2、验价
             BigDecimal payAmount = orderCreateTo.getOrder().getPayAmount();
             BigDecimal payPrice = submitVo.getPayPrice();
+            System.out.println("amount: "+ payAmount);
+            System.out.println("Price:  "+ payPrice);
             if (Math.abs(payAmount.subtract(payPrice).doubleValue()) < 0.01) {
+
                 // 3、对比成功--保存订单到数据库中
                 saveOrder(orderCreateTo);
 
@@ -430,7 +434,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         orderEntity.setGrowth(giftGrowth);// 总成长值
 
         // 3.应付总额
-        orderEntity.setPayAmount(orderEntity.getTotalAmount().add(orderEntity.getFreightAmount()));// 订单总额 +　运费
+//        orderEntity.setPayAmount(orderEntity.getTotalAmount().add(orderEntity.getFreightAmount()));// 订单总额 +　运费
+        orderEntity.setPayAmount(orderEntity.getTotalAmount());// 订单总额 +　运费
     }
 
     /**
