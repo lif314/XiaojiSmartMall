@@ -17,6 +17,6 @@ public class OrderWebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         // 拦截所有请求
-        registry.addInterceptor(interceptor).addPathPatterns("/**");
+        registry.addInterceptor(this.interceptor).addPathPatterns("/**");
     }
 }

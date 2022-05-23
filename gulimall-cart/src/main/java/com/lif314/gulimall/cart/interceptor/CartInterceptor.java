@@ -9,7 +9,9 @@ import com.lif314.common.to.MemberRespTo;
 import com.lif314.gulimall.cart.to.UserInfoTo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -23,11 +25,11 @@ import java.util.UUID;
  * 拦截器: 在执行目标方法之前，先判断用户的登录状态，
  * 并封装传递给controller目标请求
  */
-//@Component  // 拦截器是一个组件
+@Component  // 拦截器是一个组件
 public class CartInterceptor implements HandlerInterceptor {
 
     @Autowired
-    StringRedisTemplate redisTemplate;
+    private RedisTemplate<String, String> redisTemplate;
 
     // ThreadLocal 同一线程之间共享数据 --- Map(线程号, 共享的数据)
     public static ThreadLocal<UserInfoTo> threadLocal = new ThreadLocal<>();
@@ -53,8 +55,8 @@ public class CartInterceptor implements HandlerInterceptor {
         if (member != null) {
             // 登录
             userInfoTo.setUserId(member.getId());
-
         }
+
 
         // 没有登录,创建临时用户，查看临时购物车
         // 从cookie中获取信息

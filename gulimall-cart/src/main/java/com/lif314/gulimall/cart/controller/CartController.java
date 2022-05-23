@@ -42,7 +42,7 @@ public class CartController {
         // 使用拦截器判断是否处于登录状态
         // 并快速获取用户信息 ThreadLocal -- 同一个线程共享数据
         // 拦截器共享了一个ThreadLocal -- 线程上下文
-         UserInfoTo userInfoTo = CartInterceptor.threadLocal.get();
+        UserInfoTo userInfoTo = CartInterceptor.threadLocal.get();
         System.out.println("originalUser"+userInfoTo);
         Cart cart = cartService.getCart();
         // 清理ThreadLocal中的数据

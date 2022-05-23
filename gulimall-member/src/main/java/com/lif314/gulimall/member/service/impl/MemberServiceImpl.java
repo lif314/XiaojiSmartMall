@@ -150,11 +150,12 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
     @Override
     public MemberRespTo getUserInfo(String token) {
         String key = AuthServerConstant.LOGIN_USER + token;
-        System.out.println(key);
+        System.out.println("key:"+key);
         String s = redisTemplate.opsForValue().get(key);
-        System.out.println(s);
+
         MemberRespTo userInfoVO = JSON.parseObject(s, new TypeReference<MemberRespTo>() {
         });
+        System.out.println("userinfo"+userInfoVO);
         return userInfoVO;
     }
 

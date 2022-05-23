@@ -6,6 +6,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.lif314.common.constant.AuthServerConstant;
 import com.lif314.common.to.MemberRespTo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
@@ -22,7 +23,7 @@ import javax.servlet.http.HttpSession;
 public class LoginUserInterceptor implements HandlerInterceptor {
 
     @Autowired
-    StringRedisTemplate redisTemplate;
+    private RedisTemplate<String, String> redisTemplate;
     // 使用ThreadLocal共享用户数据
     public static ThreadLocal<MemberRespTo> loginUser = new ThreadLocal<>();
     /**
