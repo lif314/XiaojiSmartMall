@@ -119,7 +119,6 @@ public class CartServiceImpl implements CartService {
         // 判断用户是否登录
         if(userInfoTo.getUserId() != null){
             // 登录: 需要合并临时购物车和正式购物车
-
             // 获取正式的购物车
             String userIdKey = CartConstant.CART_PREFIX + userInfoTo.getUserId();
             List<CartItem> cartItemsByUserId = getCartByKey(userIdKey);
@@ -220,6 +219,7 @@ public class CartServiceImpl implements CartService {
     public List<CartItem> getCurrentUserCartItems() {
         // 使用拦截器获取用户身份信息
         UserInfoTo userInfoTo = CartInterceptor.threadLocal.get();
+        System.out.println(userInfoTo);
         if(userInfoTo ==  null){
             // 还没有登录
             return null;
@@ -272,7 +272,6 @@ public class CartServiceImpl implements CartService {
     // 封装对Redis的操作
     private BoundHashOperations<String, Object, Object> getCartOps() {
         UserInfoTo userInfoTo = CartInterceptor.threadLocal.get();
-
         String cartKey = "";
         if (userInfoTo.getUserId() != null) {
             // 已经登陆了

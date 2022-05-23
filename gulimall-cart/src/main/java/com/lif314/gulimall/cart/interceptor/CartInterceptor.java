@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -44,20 +45,30 @@ public class CartInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
+
+        // 解决远程调用需要登录问题--匹配路由直接放行
+
+//        String requestURI = request.getRequestURI();
+////        System.out.println(requestURI);
+//        AntPathMatcher antPathMatcher = new AntPathMatcher();
+//        boolean match = antPathMatcher.match("/cart/currentUserCartItems", requestURI);
+//        if(match){
+//            return true;
+//        }
+
         // 获取Session,从Session中获取当前登录用户
         UserInfoTo userInfoTo = new UserInfoTo();
 
         String token = request.getHeader("TOKEN");
+        System.out.println(token);
         String key = AuthServerConstant.LOGIN_USER + token;
         String s = redisTemplate.opsForValue().get(key);
-        MemberRespTo member = JSON.parseObject(s, new TypeReference<MemberRespTo>() {
-        });
-        if (member != null) {
-            // 登录
+        if(!StringUtils.isEmpty(s)){
+            // 用户已经登陆
+            MemberRespTo member = JSON.parseObject(s, new TypeReference<MemberRespTo>() {
+            });
             userInfoTo.setUserId(member.getId());
         }
-
-
         // 没有登录,创建临时用户，查看临时购物车
         // 从cookie中获取信息
         Cookie[] cookies = request.getCookies();
@@ -70,7 +81,6 @@ public class CartInterceptor implements HandlerInterceptor {
                     userInfoTo.setUserKey(cookie.getValue());
                     userInfoTo.setTempUser(true);
                 }
-
             }
         }
         // 如果没有临时用户，则创建一个
@@ -81,6 +91,7 @@ public class CartInterceptor implements HandlerInterceptor {
 
         // 在目标方法执行之前，使用threadLocal.
         // 这样目标方法就可以快速获取用户信息
+        System.out.println("userinfo:"  + userInfoTo);
         threadLocal.set(userInfoTo);
         // 全部放行
         return true;
@@ -96,7 +107,7 @@ public class CartInterceptor implements HandlerInterceptor {
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
 
         UserInfoTo userInfoTo = threadLocal.get();
-        if(!userInfoTo.isTempUser()){
+        if(userInfoTo != null && !userInfoTo.isTempUser()){
             // 如果没有临时用户信息，则放在cookie中
             Cookie cookie = new Cookie(CartConstant.TEMP_USER_COOKIE_NAME,userInfoTo.getUserKey());
             // 设置cookie的作用域

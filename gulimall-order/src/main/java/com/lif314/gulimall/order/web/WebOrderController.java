@@ -1,7 +1,9 @@
 package com.lif314.gulimall.order.web;
 
 
+import com.lif314.common.to.MemberRespTo;
 import com.lif314.common.utils.R;
+import com.lif314.gulimall.order.intercepter.LoginUserInterceptor;
 import com.lif314.gulimall.order.service.OrderService;
 import com.lif314.gulimall.order.vo.OrderConfirmVo;
 import com.lif314.gulimall.order.vo.OrderSubmitVo;
@@ -12,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpSession;
 import java.util.concurrent.ExecutionException;
 
 @RequestMapping("/order")
@@ -26,6 +29,8 @@ public class WebOrderController {
      */
     @GetMapping("/toTrade")
     public R toTrade() throws ExecutionException, InterruptedException {
+        MemberRespTo memberRespTo = LoginUserInterceptor.loginUser.get();
+        System.out.println(memberRespTo);
         // 获取选中的商品数据
         OrderConfirmVo orderConfirmVo = orderService.confirmOrder();
         return R.ok().put("data", orderConfirmVo);

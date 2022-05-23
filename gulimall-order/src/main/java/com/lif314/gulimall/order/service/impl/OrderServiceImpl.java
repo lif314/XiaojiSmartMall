@@ -190,6 +190,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             try{
                 // TODO 保证消息一定发送出去， 每一个消息做日志记录(给数据库保存消息详细信息，定期扫描进行恢复)
                 // 定期扫描数据库将失败的消息再发送一遍
+
                 rabbitTemplate.convertAndSend("order-event-exchange", "order.release.other", newOrder);
             }catch (Exception e){
                 // TODO 引入重试机制：将没法成功的消息重试几次进行发送
@@ -235,6 +236,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     public OrderConfirmVo confirmOrder() throws ExecutionException, InterruptedException {
         OrderConfirmVo orderConfirmVo = new OrderConfirmVo();
         MemberRespTo memberRespTo = LoginUserInterceptor.loginUser.get();
+        System.out.println("ordermem"+memberRespTo);
         // 主线程  RequestContextHolder -- 使用ThreadLocal共享数据
         // 获取之前的请求信息，每一个请求都应该共享数据
         RequestAttributes mainThreadRequest = RequestContextHolder.getRequestAttributes();
