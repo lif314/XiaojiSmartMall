@@ -5,12 +5,14 @@ import java.util.Map;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
 import com.lif314.common.exception.BizCodeEnum;
+import com.lif314.common.to.MemberRespTo;
 import com.lif314.gulimall.member.exception.PhoneExistException;
 import com.lif314.gulimall.member.exception.UsernameExistException;
 import com.lif314.gulimall.member.feign.CouponFeignService;
 import com.lif314.gulimall.member.vo.MemberLoginVo;
 import com.lif314.gulimall.member.vo.MemberRegisterVo;
 import com.lif314.gulimall.member.vo.SocialUserVo;
+import com.lif314.gulimall.member.vo.TokenVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,6 +46,14 @@ public class MemberController {
         memberEntity.setNickname("张三");
         R membercoupons = couponFeignService.membercoupons();
         return R.ok().put("member", memberEntity).put("coupons", membercoupons.get("coupons"));
+    }
+
+
+    @PostMapping("/userinfo")
+    public  R getUserInfo(@RequestBody TokenVo tokenVo){
+        System.out.println(tokenVo.getToken());
+        MemberRespTo member =  memberService.getUserInfo(tokenVo.getToken());
+        return R.ok().put("data", member);
     }
 
     /***

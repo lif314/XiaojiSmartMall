@@ -2,8 +2,12 @@ package com.lif314.gulimall.seckill.intercepter;
 
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import com.alibaba.nacos.common.http.client.handler.StringResponseHandler;
 import com.lif314.common.constant.AuthServerConstant;
 import com.lif314.common.to.MemberRespTo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -18,6 +22,8 @@ import javax.servlet.http.HttpSession;
 @Component
 public class LoginUserInterceptor implements HandlerInterceptor {
 
+    @Autowired
+    StringRedisTemplate redisTemplate;
 
     // 使用ThreadLocal共享用户数据
     public static ThreadLocal<MemberRespTo> loginUser = new ThreadLocal<>();
@@ -36,20 +42,16 @@ public class LoginUserInterceptor implements HandlerInterceptor {
         AntPathMatcher antPathMatcher = new AntPathMatcher();
         boolean match = antPathMatcher.match("/kill**", requestURI);
         if(match){
-            // 需要登录才能进行
-            HttpSession session = request.getSession();
-            Object attribute = session.getAttribute(AuthServerConstant.LOGIN_USER);
-            // !!! 没有接受强制转换
-            String s = JSON.toJSONString(attribute);
-            MemberRespTo memberRespTo = JSON.parseObject(s, MemberRespTo.class);
+            String token = request.getHeader("TOKEN");
+            String key = AuthServerConstant.LOGIN_USER + token;
+            String s = redisTemplate.opsForValue().get(key);
+            MemberRespTo memberRespTo = JSON.parseObject(s, new TypeReference<MemberRespTo>() {
+            });
             if(memberRespTo != null){
                 // 登录
                 loginUser.set(memberRespTo);  // 共享用户数据
                 return true;
             }else{
-                // 没有登录就去登录
-                request.getSession().setAttribute("msg", "请先登录！");
-//                response.sendRedirect("http://auth.feihong.com/login.html");
                 return false;
             }
         }else {

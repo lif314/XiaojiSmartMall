@@ -26,6 +26,7 @@ import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -168,9 +169,12 @@ public class LoginController {
             Object data =  r.get("data");
             String toString = JSON.toJSON(data).toString();
             MemberRespTo memberRespTo = JSON.parseObject(toString, MemberRespTo.class);
-            session.setAttribute(AuthServerConstant.LOGIN_USER, memberRespTo);
+            String token = UUID.randomUUID().toString();
+            String key  = AuthServerConstant.LOGIN_USER + token;
+            String s = JSON.toJSONString(memberRespTo);
+            redisTemplate.opsForValue().set(key, s);
             // @TODO 暂时返回用户信息
-            return R.ok().put("data", memberRespTo);
+            return R.ok().put("data", token);
         }else{
             // 登录失败
             Map<String, String> errors = new HashMap<>();

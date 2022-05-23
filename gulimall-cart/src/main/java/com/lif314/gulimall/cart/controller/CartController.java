@@ -1,7 +1,9 @@
 package com.lif314.gulimall.cart.controller;
 
 import com.lif314.common.utils.R;
+import com.lif314.gulimall.cart.interceptor.CartInterceptor;
 import com.lif314.gulimall.cart.service.CartService;
+import com.lif314.gulimall.cart.to.UserInfoTo;
 import com.lif314.gulimall.cart.vo.Cart;
 import com.lif314.gulimall.cart.vo.CartItem;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +42,8 @@ public class CartController {
         // 使用拦截器判断是否处于登录状态
         // 并快速获取用户信息 ThreadLocal -- 同一个线程共享数据
         // 拦截器共享了一个ThreadLocal -- 线程上下文
-        // UserInfoTo userInfoTo = CartInterceptor.threadLocal.get();
+         UserInfoTo userInfoTo = CartInterceptor.threadLocal.get();
+        System.out.println("originalUser"+userInfoTo);
         Cart cart = cartService.getCart();
         // 清理ThreadLocal中的数据
 //        CartInterceptor.threadLocal.remove();
@@ -54,12 +57,12 @@ public class CartController {
      * @param skuId 商品的id
      * @param num 商品的数量
      */
-    @GetMapping("/addToCart")
-    public R addToCart(@RequestParam("skuId") Long skuId,
-                            @RequestParam("num") Integer num) throws ExecutionException, InterruptedException {
+    @GetMapping("/addToCart/{skuId}/{num}")
+    public R addToCart(@PathVariable("skuId") Long skuId,
+                            @PathVariable("num") Integer num) throws ExecutionException, InterruptedException {
 
         CartItem cartItem = cartService.addToCart(skuId, num);
-        return R.ok().put("data", skuId);
+        return R.ok().put("data", cartItem);
     }
 
 

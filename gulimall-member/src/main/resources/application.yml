@@ -1,4 +1,8 @@
 spring:
+  redis:
+    host: 81.68.236.154
+    password: lif314
+    port: 6379
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://121.36.229.15:3306/gulimall_ums?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai

@@ -114,7 +114,7 @@ public class CartServiceImpl implements CartService {
     public Cart getCart() {
         // 获取用户数据
         UserInfoTo userInfoTo = CartInterceptor.threadLocal.get();
-
+        System.out.println("userInfo:"+userInfoTo);
         Cart cart = new Cart();
         // 判断用户是否登录
         if(userInfoTo.getUserId() != null){

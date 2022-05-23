@@ -2,11 +2,14 @@ package com.lif314.gulimall.cart.interceptor;
 
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.lif314.common.constant.AuthServerConstant;
 import com.lif314.common.constant.CartConstant;
 import com.lif314.common.to.MemberRespTo;
 import com.lif314.gulimall.cart.to.UserInfoTo;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -22,6 +25,9 @@ import java.util.UUID;
  */
 //@Component  // 拦截器是一个组件
 public class CartInterceptor implements HandlerInterceptor {
+
+    @Autowired
+    StringRedisTemplate redisTemplate;
 
     // ThreadLocal 同一线程之间共享数据 --- Map(线程号, 共享的数据)
     public static ThreadLocal<UserInfoTo> threadLocal = new ThreadLocal<>();
@@ -39,9 +45,11 @@ public class CartInterceptor implements HandlerInterceptor {
         // 获取Session,从Session中获取当前登录用户
         UserInfoTo userInfoTo = new UserInfoTo();
 
-        HttpSession session = request.getSession();
-        Object attribute = session.getAttribute(AuthServerConstant.LOGIN_USER);
-        MemberRespTo member = JSON.parseObject(JSON.toJSONString(attribute), MemberRespTo.class);
+        String token = request.getHeader("TOKEN");
+        String key = AuthServerConstant.LOGIN_USER + token;
+        String s = redisTemplate.opsForValue().get(key);
+        MemberRespTo member = JSON.parseObject(s, new TypeReference<MemberRespTo>() {
+        });
         if (member != null) {
             // 登录
             userInfoTo.setUserId(member.getId());
@@ -90,7 +98,7 @@ public class CartInterceptor implements HandlerInterceptor {
             // 如果没有临时用户信息，则放在cookie中
             Cookie cookie = new Cookie(CartConstant.TEMP_USER_COOKIE_NAME,userInfoTo.getUserKey());
             // 设置cookie的作用域
-            cookie.setDomain("feihong.com");
+//            cookie.setDomain("feihong.com");
             // 设置过期时间 -- 一个月
             cookie.setMaxAge(CartConstant.TEMP_USER_COOKIE_TIMEOUT);
             // 添加cookie

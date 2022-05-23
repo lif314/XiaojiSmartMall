@@ -1,6 +1,7 @@
 package com.lif314.gulimall.member.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.lif314.common.to.MemberRespTo;
 import com.lif314.common.utils.PageUtils;
 import com.lif314.gulimall.member.entity.MemberEntity;
 import com.lif314.gulimall.member.exception.PhoneExistException;
@@ -9,7 +10,6 @@ import com.lif314.gulimall.member.vo.MemberLoginVo;
 import com.lif314.gulimall.member.vo.MemberRegisterVo;
 import com.lif314.gulimall.member.vo.SocialUserVo;
 
-import java.net.UnknownServiceException;
 import java.util.Map;
 
 /**
@@ -33,5 +33,7 @@ public interface MemberService extends IService<MemberEntity> {
     MemberEntity login(MemberLoginVo vo);
 
     MemberEntity oauthLogin(SocialUserVo socialUserVo);
+
+    MemberRespTo getUserInfo(String token);
 }
 

@@ -1,5 +1,9 @@
 package com.lif314.gulimall.member.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import com.lif314.common.constant.AuthServerConstant;
+import com.lif314.common.to.MemberRespTo;
 import com.lif314.gulimall.member.entity.MemberLevelEntity;
 import com.lif314.gulimall.member.exception.PhoneExistException;
 import com.lif314.gulimall.member.exception.UsernameExistException;
@@ -7,6 +11,7 @@ import com.lif314.gulimall.member.vo.MemberLoginVo;
 import com.lif314.gulimall.member.vo.MemberRegisterVo;
 import com.lif314.gulimall.member.vo.SocialUserVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +33,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
 
     @Autowired
     MemberDao memberDao;
+    @Autowired
+    StringRedisTemplate redisTemplate;
 
 
     @Override
@@ -138,6 +145,17 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
             // 返回注册的对象
             return newMember;
         }
+    }
+
+    @Override
+    public MemberRespTo getUserInfo(String token) {
+        String key = AuthServerConstant.LOGIN_USER + token;
+        System.out.println(key);
+        String s = redisTemplate.opsForValue().get(key);
+        System.out.println(s);
+        MemberRespTo userInfoVO = JSON.parseObject(s, new TypeReference<MemberRespTo>() {
+        });
+        return userInfoVO;
     }
 
     private MemberLevelEntity getDefaultMemberLevel() {
