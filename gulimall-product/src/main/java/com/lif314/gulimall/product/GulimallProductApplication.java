@@ -6,13 +6,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
-@EnableRedisHttpSession  // 开启Redis存储Session
-@EnableDiscoveryClient
+
+//@EnableRedisHttpSession  // 开启Redis存储Session
 @MapperScan("com.lif314.gulimall.product.dao")
+@EnableFeignClients
 @SpringBootApplication
-@EnableFeignClients(basePackages = "com.lif314.gulimall.product.feign") // 开启远程调用功能，可以添加扫描包的地址,需要父子同包
+@EnableDiscoveryClient
 public class GulimallProductApplication {
 
     public static void main(String[] args) {

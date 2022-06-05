@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 商品库存
@@ -26,4 +27,11 @@ public interface WareSkuDao extends BaseMapper<WareSkuEntity> {
     Long lockSkuStock(@Param("skuId") Long skuId,@Param("wareId") Long wareId,@Param("num") Integer num);
 
     void unlockStock(@Param("skuId") Long skuId, @Param("wareId") Long wareId, @Param("num") Integer num);
+
+    /**
+     * 查询商品库存充足的仓库
+     * @param skuIds 商品项ID集合
+     * @return
+     */
+    List<WareSkuEntity> selectListHasSkuStock(@Param("skuIds") Set<Long> skuIds);
 }

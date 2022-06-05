@@ -113,6 +113,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
             return memberEntity;
         }else {
             // 账号或密码错误
+//            throw new RuntimeException("密码错误");
             return null;
         }
     }

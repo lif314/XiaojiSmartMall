@@ -53,7 +53,7 @@ public class SkuInfoController {
 
 
     /**
-     * 信息
+     * 查询商品详情
      */
     @RequestMapping("/info/{skuId}")
    // @RequiresPermissions("product:skuinfo:info")

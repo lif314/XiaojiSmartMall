@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.UUID;
 //
@@ -49,7 +50,6 @@ class GulimallProductApplicationTests {
         System.out.println(attrGroupWithAttrsBySpuId.toString());
     }
 
-
     @Test
     public void testReis(){
         // hello world
@@ -75,7 +75,7 @@ class GulimallProductApplicationTests {
 //        ossClient.putObject("gulimall-lif314", "test.png", new FileInputStream("C:\\Users\\lilinfei\\Pictures\\github.png"));
 //        System.out.println("上传成功 ------");
 //    }
-
+//
 //    @Test
 //    public void uploadFile(){
 //        // Endpoint以华东1（杭州）为例，其它Region请按实际情况填写。

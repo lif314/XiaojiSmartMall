@@ -14,8 +14,8 @@ spring:
       discovery:
         server-addr: 121.36.229.15:8848
     alicloud:
-      access-key:
-      secret-key:
+      access-key: 221
+      secret-key: 13131
       oss:
         endpoint: https://oss-cn-shanghai.aliyuncs.com
   # 模块名
@@ -24,8 +24,8 @@ spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
-  thymeleaf:
-    cache: false
+
+
 # sql映射文件位置
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
@@ -39,5 +39,3 @@ mybatis-plus:
 
 server:
   port: 8300
-
-

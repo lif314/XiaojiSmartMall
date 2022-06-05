@@ -26,6 +26,14 @@
     <select id="getTotalStock" resultType="java.lang.Long">
         SELECT SUM(stock-stock_locked) FROM `wms_ware_sku` WHERE sku_id=#{skuId}
     </select>
+    <select id="selectListHasSkuStock" resultMap="wareSkuMap">
+        SELECT ware_id, sku_id, stock, stock_locked FROM `wms_ware_sku`
+        WHERE sku_id IN
+        <foreach collection="skuIds" open="(" close=")" item="skuId" separator=",">
+            #{skuId}
+        </foreach>
+        AND stock - stock_locked &gt; 0
+    </select>
     <select id="listWatrIdHasStock" resultType="java.lang.Long">
         SELECT ware_id FROM `wms_ware_sku` WHERE sku_id=#{skuId} AND stock_locked > 0
     </select>

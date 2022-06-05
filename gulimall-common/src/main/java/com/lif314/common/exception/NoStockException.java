@@ -9,7 +9,7 @@ public class NoStockException  extends RuntimeException{
     }
 
     public NoStockException(String msg){
-        super(msg +", 没有足够的库存");
+        super(msg +", 远程调用失败，可能是没有足够的库存|服务没有上线");
     }
 
     public void setSkuId(Long skuId) {

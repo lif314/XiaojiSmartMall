@@ -65,11 +65,14 @@ public class SecKillServiceImpl implements SecKillService {
             List<SeckillSessionVo> seckillSessionVos = JSON.parseObject(s, new TypeReference<List<SeckillSessionVo>>() {
             });
 
-            // 上架商品，将商品存储在Redis中
-            //  2、缓存活动信息
-            saveSessionInfos(seckillSessionVos);
-            // 3、缓存活动的关联信息
-            saveRelationSkusInfos(seckillSessionVos);
+
+            if(seckillSessionVos != null && seckillSessionVos.size() > 0){
+                // 上架商品，将商品存储在Redis中
+                //  2、缓存活动信息
+                saveSessionInfos(seckillSessionVos);
+                // 3、缓存活动的关联信息
+                saveRelationSkusInfos(seckillSessionVos);
+            }
         }
     }
 

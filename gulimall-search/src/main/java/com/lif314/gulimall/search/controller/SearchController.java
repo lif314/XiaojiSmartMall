@@ -26,7 +26,7 @@ public class SearchController {
     @PostMapping("/list")  // 点击分类跳转到搜索页面
     public R listPage(@RequestBody SearchParamVo searchParam) {
         // 获取query参数
-        System.out.println("参数：" + searchParam);
+//        System.out.println("参数：" + searchParam);
 //        String s = JSON.toJSONString(searchParam);
 //        SearchParamVo param = JSON.parseObject(s, new TypeReference<SearchParamVo>(){});
         SearchResultVo result = searchService.search(searchParam);

@@ -60,7 +60,7 @@ public class CartInterceptor implements HandlerInterceptor {
         UserInfoTo userInfoTo = new UserInfoTo();
 
         String token = request.getHeader("TOKEN");
-        System.out.println(token);
+//        System.out.println(token);
         String key = AuthServerConstant.LOGIN_USER + token;
         String s = redisTemplate.opsForValue().get(key);
         if(!StringUtils.isEmpty(s)){
@@ -91,7 +91,7 @@ public class CartInterceptor implements HandlerInterceptor {
 
         // 在目标方法执行之前，使用threadLocal.
         // 这样目标方法就可以快速获取用户信息
-        System.out.println("userinfo:"  + userInfoTo);
+//        System.out.println("userinfo:"  + userInfoTo);
         threadLocal.set(userInfoTo);
         // 全部放行
         return true;

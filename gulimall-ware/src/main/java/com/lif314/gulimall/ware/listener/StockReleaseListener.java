@@ -1,7 +1,6 @@
 package com.lif314.gulimall.ware.listener;
 
-import com.alibaba.nacos.shaded.org.checkerframework.checker.units.qual.C;
-import com.lif314.common.to.mq.StockLockedTo;
+import com.lif314.gulimall.ware.to.StockLockedTo;
 import com.lif314.gulimall.ware.service.WareSkuService;
 import com.lif314.gulimall.ware.vo.OrderEntityVo;
 import com.rabbitmq.client.Channel;
@@ -9,10 +8,10 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import java.io.IOException;
 
-@Service
+@Component
 @RabbitListener(queues = "stock.release.stock.queue") // 监听库存解锁队列
 public class StockReleaseListener {
 
@@ -27,7 +26,9 @@ public class StockReleaseListener {
     @RabbitHandler
     public void handleStockLockedRelease(StockLockedTo to, Message message, Channel channel) throws IOException {
 
-        System.out.println(">>>> 收到解锁库存消息.......");
+        System.out.println(">>>> 收到解锁库存消息......." + to.getOrderSn());
+//        StockLockedTo to = JSON.parseObject(s, new TypeReference<StockLockedTo>(){});
+
         try{
             wareSkuService.handleUnLockStockWare(to);
             // 消息消费成功
@@ -44,7 +45,11 @@ public class StockReleaseListener {
      */
     @RabbitHandler
     public void handleOrderCloseRelease(OrderEntityVo vo, Message message, Channel channel) throws IOException {
-        System.out.println("订单关闭，准备解锁库存....");
+
+//        String s = JSON.toJSONString(vo);
+//        OrderEntityVo vo = JSON.parseObject(s, new TypeReference<OrderEntityVo>(){});
+
+        System.out.println("订单关闭，准备解锁库存...." + vo.getOrderSn());
         try {
             wareSkuService.handleUnLockStockOrder(vo);
             // 走到这里宕机，消息重复发送  -- 设置为幂等的   防重表

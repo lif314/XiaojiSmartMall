@@ -27,6 +27,8 @@ public enum BizCodeEnum {
 
     SMS_CODE_EXCEPTION( 10002,"验证码获取频率太高，稍后再试"),
 
+    TOO_MANY_REQUESTS( 10003,"请求过多，远程调用失败"),
+
     PRODUCT_UP_EXCEPTION(11000,"商品上架出错"),
 
     USER_EXIST_EXCEPTION(15001,"用户名已存在"),

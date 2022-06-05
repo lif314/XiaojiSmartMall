@@ -8,7 +8,8 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
+
 
 import java.io.IOException;
 
@@ -16,8 +17,8 @@ import java.io.IOException;
 /**
  * 定时关单
  */
-@Service
-@RabbitListener(queues = "stock.release.stock.queue")
+@Component
+@RabbitListener(queues = "order.release.order.queue")
 public class OrderCloseListener {
 
     @Autowired
@@ -25,6 +26,8 @@ public class OrderCloseListener {
 
     @RabbitHandler
     public void closeOrderListener(OrderEntity orderEntity, Channel channel, Message message) throws IOException {
+
+//        OrderEntity orderEntity = JSON.parseObject(order, new TypeReference<OrderEntity>(){});
 
         try{
             orderService.closeOrder(orderEntity);

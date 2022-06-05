@@ -1,6 +1,7 @@
 package com.lif314.gulimall.product.feign;
 
 import com.lif314.common.utils.R;
+//import com.lif314.gulimall.product.feign.factory.RemoteSeckillFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

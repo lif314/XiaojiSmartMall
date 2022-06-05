@@ -31,8 +31,8 @@ public class SecKillSkuScheduled {
     @Autowired
     RedissonClient redissonClient;
 
-//    @Scheduled(cron = "0 0 3 * * ?") // 每天3点执行一次
-    @Scheduled(cron = "0/5 * * * * ?")  // 测试：每5秒执行一次
+    @Scheduled(cron = "0 0 3 * * ?") // 每天3点执行一次
+//    @Scheduled(cron = "0/5 * * * * ?")  // 测试：每5秒执行一次
     public void updateSecKillSkuLatest3Days(){
         // TODO 重复上架无需处理(×) --> 接口幂等性
 

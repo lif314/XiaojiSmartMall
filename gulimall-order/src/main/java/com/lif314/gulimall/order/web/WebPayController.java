@@ -33,8 +33,8 @@ public class WebPayController {
      */
     @GetMapping(value = "/payOrder")  // 告诉产生html数据，而不是json数据
     public R payOrder(@RequestParam("orderSn") String orderSn) throws AlipayApiException {
+//        System.out.println("Pay Order, OrderSn: " + orderSn);
         // 获取订单的支付信息
-//        System.out.println(orderSn);
         PayVo payVo = orderService.getOrderByOrderSn(orderSn);
         // 调用alipay -- 响应数据为HTML表单
         // 将此页面直接交给浏览器进行渲染

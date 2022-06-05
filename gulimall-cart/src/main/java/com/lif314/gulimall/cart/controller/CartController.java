@@ -1,8 +1,12 @@
 package com.lif314.gulimall.cart.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.lif314.common.utils.R;
+import com.lif314.gulimall.cart.feign.ProductFeignService;
 import com.lif314.gulimall.cart.interceptor.CartInterceptor;
 import com.lif314.gulimall.cart.service.CartService;
+import com.lif314.gulimall.cart.to.SkuInfoVo;
 import com.lif314.gulimall.cart.to.UserInfoTo;
 import com.lif314.gulimall.cart.vo.Cart;
 import com.lif314.gulimall.cart.vo.CartItem;
@@ -23,6 +27,9 @@ public class CartController {
 
     @Autowired
     CartService cartService;
+
+    @Autowired
+    ProductFeignService productFeignService;
 
     /**
      * 获取购物车 【登录 / 未登录】
@@ -63,6 +70,22 @@ public class CartController {
         return R.ok().put("data", cartItem);
     }
 
+
+    /**
+     * 远程调用测试
+     *
+     * 获取商品详情
+     */
+    @GetMapping("/skuinfo/{skuId}")
+    public R getRemoteSkuInfo(@PathVariable("skuId") Long skuId){
+        R r = productFeignService.getSkuInfo(skuId);
+        if (r.getCode() == 0) {
+            Object data = r.get("skuInfo");
+            SkuInfoVo skuInfoVo = JSON.parseObject(JSON.toJSONString(data), new TypeReference<SkuInfoVo>(){});
+            return R.ok().put("data", skuInfoVo);
+        }
+        return R.error().put("error", "远程调用异常，未查询到数据");
+    }
 
     /**
      *跳到成功页

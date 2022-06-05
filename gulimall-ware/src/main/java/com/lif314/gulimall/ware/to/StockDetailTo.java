@@ -1,4 +1,4 @@
-package com.lif314.common.to.mq;
+package com.lif314.gulimall.ware.to;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

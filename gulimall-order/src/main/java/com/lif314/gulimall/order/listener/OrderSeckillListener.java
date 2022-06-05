@@ -1,6 +1,8 @@
 package com.lif314.gulimall.order.listener;
 
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.lif314.common.to.mq.SeckillOrderTo;
 import com.lif314.gulimall.order.entity.OrderEntity;
 import com.lif314.gulimall.order.service.OrderService;
@@ -23,7 +25,11 @@ public class OrderSeckillListener {
     OrderService orderService;
 
     @RabbitHandler
-    public void SeckillOrderListener(SeckillOrderTo seckillOrder, Channel channel, Message message) throws IOException {
+    public void SeckillOrderListener(SeckillOrderTo to, Channel channel, Message message) throws IOException {
+
+        String s = JSON.toJSONString(to);
+        System.out.println("秒杀订单：" + s);
+        SeckillOrderTo seckillOrder = JSON.parseObject(s, new TypeReference<SeckillOrderTo>(){});
 
         try{
             // 创建秒杀订单

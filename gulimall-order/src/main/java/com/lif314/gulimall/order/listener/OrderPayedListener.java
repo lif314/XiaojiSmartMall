@@ -2,9 +2,11 @@ package com.lif314.gulimall.order.listener;
 
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.lif314.gulimall.order.config.AlipayTemplate;
+import com.lif314.gulimall.order.entity.OrderEntity;
 import com.lif314.gulimall.order.service.OrderService;
 import com.lif314.gulimall.order.vo.PayAsyncVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +31,11 @@ public class OrderPayedListener {
     AlipayTemplate alipayTemplate;
 
     @PostMapping("/payed/notify") // 需要post请求
-    public String handleAliPayed(PayAsyncVo vo, HttpServletRequest request) throws AlipayApiException {
-        System.out.println(JSON.toJSONString(vo));
+    public String handleAliPayed(String vo1, HttpServletRequest request) throws AlipayApiException {
+        System.out.println(JSON.toJSONString(vo1));
         System.out.println("支付宝数据到了。。。。");
+
+        PayAsyncVo vo = JSON.parseObject(vo1, new TypeReference<PayAsyncVo>(){});
 
         // TODO 验签！！！！验证是ali返回的数据
         Map<String, String> params = new HashMap<>();

@@ -12,9 +12,9 @@ spring:
   # 模块名
   application:
     name: gulimall-coupon
-#  jackson:
-#    date-format: yyyy-MM-dd HH:mm:ss
-#    time-zone: GMT+8
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
 
 # sql映射文件位置
 mybatis-plus:

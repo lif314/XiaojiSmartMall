@@ -41,7 +41,7 @@ public class WebOrderController {
      */
     @PostMapping("/submitOrder")
     public R submitOrder(@RequestBody OrderSubmitVo submitVo){
-        System.out.println("order:"+submitVo);
+//        System.out.println("order:"+submitVo);
         // 去创建订单，验令牌，验价格，锁库存。。。。
 
         SubmitOrderRespVo respVo =  orderService.submitOrder(submitVo);
@@ -55,7 +55,7 @@ public class WebOrderController {
             switch (respVo.getCode()){
                 case 1: msg = "订单信息过期，请刷新再次提交"; break;
                 case 2: msg = "订单商品价格发生变化，请确认后提交"; break;
-                case 3: msg = "库存确定失败，商品库存不足"; break;
+                case 3: msg = "远程调用锁定库存失败"; break;
             }
             // 模拟放在session中，同时放在请求域中
             return R.error().put("data", msg);

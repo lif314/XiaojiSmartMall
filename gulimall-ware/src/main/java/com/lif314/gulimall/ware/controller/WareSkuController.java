@@ -38,15 +38,13 @@ public class WareSkuController {
      */
     @PostMapping("/lock/order")
     public R orderLockStock(@RequestBody WareSkuLockVo vo){
-//        List<LockStockResult> results = wareSkuService.orderLockStock(vo);
+        System.out.println("远程锁库存：" + vo.toString());
         try{
-            Boolean results = wareSkuService.orderLockStock(vo);
+            wareSkuService.orderLockStock(vo);
             return R.ok();
         }catch (NoStockException e){
           return  R.error(BizCodeEnum.NO_STOCK_EXCEPTION.getCode(),BizCodeEnum.NO_STOCK_EXCEPTION.getMsg());
         }
-//        // 返回每件商品的锁定情况
-//        return R.ok().put("data", results);
     }
 
     /**
